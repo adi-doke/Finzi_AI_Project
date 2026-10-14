@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FinZi — Register</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #138f87;
+      --primary-dark: #0f6f69;
+      --primary-light: #dff7f4;
+      --secondary: #12c4a8;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --error: #dc2626;
+      --success: #059669;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --radius: 8px;
+      --radius-lg: 12px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      color: var(--gray-800);
+      line-height: 1.5;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--gray-200);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 24px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .brand i {
+      font-size: 22px;
+    }
+
+    .controls a.button, .controls button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .controls a.button:hover, .controls button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .controls a.button.secondary {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+
+    .controls a.button.secondary:hover {
+      background: var(--primary-light);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .register-container {
+      width: 100%;
+      max-width: 500px;
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+
+    .register-container:hover {
+      transform: translateY(-5px);
+    }
+
+    .register-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 32px 32px 24px;
+      text-align: center;
+    }
+
+    .register-header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .register-header p {
+      opacity: 0.9;
+      font-size: 15px;
+    }
+
+    .register-form {
+      padding: 32px;
+    }
+
+    .form-row {
+      margin-bottom: 20px;
+    }
+
+    .form-row label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--gray-700);
+    }
+
+    .form-row label::after {
+      content: " *";
+      color: var(--error);
+      opacity: 0.8;
+    }
+
+    .optional::after {
+      content: "" !important;
+    }
+
+    .input-with-icon {
+      position: relative;
+    }
+
+    .input-with-icon i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-500);
+      font-size: 18px;
+    }
+
+    .input-with-icon input, .input-with-icon select {
+      width: 100%;
+      padding: 12px 16px 12px 44px;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius);
+      font-size: 16px;
+      transition: all 0.2s ease;
+      background: var(--gray-50);
+      appearance: none;
+    }
+
+    .input-with-icon input:focus, .input-with-icon select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(19, 143, 135, 0.12);
+      background: white;
+    }
+
+    .input-with-icon input::placeholder {
+      color: var(--gray-400);
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--gray-500);
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .password-strength {
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    .strength-bar {
+      height: 4px;
+      background: var(--gray-200);
+      border-radius: 2px;
+      margin-top: 4px;
+      overflow: hidden;
+    }
+
+    .strength-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .strength-weak {
+      background: var(--error);
+      width: 33%;
+    }
+
+    .strength-medium {
+      background: #f59e0b;
+      width: 66%;
+    }
+
+    .strength-strong {
+      background: var(--success);
+      width: 100%;
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .submit-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .submit-btn i {
+      font-size: 18px;
+    }
+
+    .register-link {
+      text-align: center;
+      font-size: 15px;
+      color: var(--gray-600);
+      margin-top: 24px;
+    }
+
+    .register-link a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .register-link a:hover {
+      color: var(--primary-dark);
+      text-decoration: underline;
+    }
+
+    .message {
+      font-size: 14px;
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      border-left: 4px solid;
+    }
+
+    .error {
+      color: var(--error);
+      background: #fef2f2;
+      border-left-color: var(--error);
+    }
+
+    .success {
+      color: var(--success);
+      background: #f0fdf4;
+      border-left-color: var(--success);
+    }
+
+    .message i {
+      font-size: 16px;
+    }
+
+    .terms {
+      font-size: 14px;
+      color: var(--gray-600);
+      margin-top: 16px;
+      text-align: center;
+    }
+
+    .terms a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .terms a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .topbar {
+        padding: 14px 16px;
+      }
+      
+      .brand {
+        font-size: 20px;
+      }
+      
+      .register-header {
+        padding: 24px 20px 20px;
+      }
+      
+      .register-form {
+        padding: 24px 20px;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="/static/finzi-theme.css">
+</head>
+<body>
+  <nav class="topbar">
+    <a class="brand" href="/">
+      <i class="fas fa-chart-line"></i>
+      FinZi
+    </a>
+    <div class="controls">
+      <a class="button secondary" href="/">Home</a>
+      <a class="button" href="/login">Sign in</a>
+    </div>
+  </nav>
+  <div class="page-tabs" style="width:min(100% - 32px, 1100px);margin:18px auto 0;display:flex;flex-wrap:wrap;gap:10px;padding:0 4px;">
+    <a href="#features" class="button secondary" style="text-decoration:none;">Features</a>
+    <a href="#about" class="button secondary" style="text-decoration:none;">About</a>
+    <a href="#how-it-works" class="button secondary" style="text-decoration:none;">How it works</a>
+  </div>
+
+  <main>
+    <div class="register-container">
+      <div class="register-header">
+        <h1>Join FinZi</h1>
+        <p>Create your account to start managing your finances</p>
+      </div>
+      
+      <form id="registerForm" novalidate class="register-form">
+        <div class="form-row">
+          <label for="name">Full name</label>
+          <div class="input-with-icon">
+            <i class="fas fa-user"></i>
+            <input id="name" name="name" type="text" placeholder="Enter your full name" />
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <label for="phone">Mobile number</label>
+          <div class="input-with-icon">
+            <i class="fas fa-phone"></i>
+            <input id="phone" name="phone" type="tel" placeholder="Enter your mobile number" />
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <label for="email">Email</label>
+          <div class="input-with-icon">
+            <i class="fas fa-envelope"></i>
+            <input id="email" name="email" type="email" placeholder="Enter your email address" />
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <label for="gender" class="optional">Gender</label>
+          <div class="input-with-icon">
+            <i class="fas fa-venus-mars"></i>
+            <select id="gender" name="gender">
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+              <option value="prefer-not-to-say">Prefer not to say</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <label for="password">Password</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock"></i>
+            <input id="password" name="password" type="password" required placeholder="Create a strong password" />
+            <button type="button" class="password-toggle" id="passwordToggle">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="password-strength">
+            <span id="strengthText">Password strength</span>
+            <div class="strength-bar">
+              <div class="strength-fill" id="strengthBar"></div>
+            </div>
+          </div>
+        </div>
+        
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-user-plus"></i>
+          Create Account
+        </button>
+        
+        <div id="registerMsg" class="message" style="display:none">
+          <i id="messageIcon" class="fas fa-info-circle"></i>
+          <span id="messageText"></span>
+        </div>
+        
+        <div class="terms">
+          By creating an account, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+        </div>
+        
+        <div class="register-link">
+          Already have an account? <a href="/login">Sign in</a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <section class="page-details" style="width:min(100% - 32px, 1100px);margin:0 auto 48px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;">
+    <article id="features" class="detail-card" style="background:rgba(255,255,255,0.86);border:1px solid rgba(34,48,71,0.08);border-radius:24px;padding:22px;">
+      <h2 style="margin:0 0 10px;color:var(--gray-900);font-size:1.25rem;">Features</h2>
+      <p style="margin:0 0 12px;color:var(--gray-600);line-height:1.7;">Create your account and unlock a finance dashboard with spending, receipts, and reports.</p>
+      <div style="display:grid;gap:10px;">
+        <div style="padding:12px 14px;border-radius:16px;background:var(--gray-50);border:1px solid var(--gray-200);">Personalized finance overview</div>
+        <div style="padding:12px 14px;border-radius:16px;background:var(--gray-50);border:1px solid var(--gray-200);">Secure login and session flow</div>
+        <div style="padding:12px 14px;border-radius:16px;background:var(--gray-50);border:1px solid var(--gray-200);">Receipt and report tools ready to use</div>
+      </div>
+    </article>
+    <article id="about" class="detail-card" style="background:rgba(255,255,255,0.86);border:1px solid rgba(34,48,71,0.08);border-radius:24px;padding:22px;">
+      <h2 style="margin:0 0 10px;color:var(--gray-900);font-size:1.25rem;">About FinZi</h2>
+      <p style="margin:0;color:var(--gray-600);line-height:1.75;">The signup flow is designed to be quick, friendly, and connected to the rest of the product experience.</p>
+      <p style="margin:14px 0 0;color:var(--gray-600);line-height:1.75;">Once registered, users can immediately move into sign in and continue to their money dashboard.</p>
+    </article>
+    <article id="how-it-works" class="detail-card" style="background:rgba(255,255,255,0.86);border:1px solid rgba(34,48,71,0.08);border-radius:24px;padding:22px;">
+      <h2 style="margin:0 0 10px;color:var(--gray-900);font-size:1.25rem;">How it works</h2>
+      <p style="margin:0 0 12px;color:var(--gray-600);line-height:1.75;">Fill in your account details, create a password, and submit the form to begin using FinZi.</p>
+      <p style="margin:0;color:var(--gray-600);line-height:1.75;">The tabs above let new users explore what the product does before they finish the sign up step.</p>
+    </article>
+  </section>
+
+  <script src="/static/app.js"></script>
+  <script>
+    // Password visibility toggle
+    document.getElementById('passwordToggle').addEventListener('click', function() {
+      const passwordInput = document.getElementById('password');
+      const icon = this.querySelector('i');
+      
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    });
+
+    // Password strength indicator
+    document.getElementById('password').addEventListener('input', function() {
+      const password = this.value;
+      const strengthBar = document.getElementById('strengthBar');
+      const strengthText = document.getElementById('strengthText');
+      
+      // Reset
+      strengthBar.className = 'strength-fill';
+      strengthText.textContent = 'Password strength';
+      
+      if (password.length === 0) return;
+      
+      let strength = 0;
+      
+      // Length check
+      if (password.length >= 8) strength++;
+      
+      // Contains lowercase
+      if (/[a-z]/.test(password)) strength++;
+      
+      // Contains uppercase
+      if (/[A-Z]/.test(password)) strength++;
+      
+      // Contains numbers
+      if (/\d/.test(password)) strength++;
+      
+      // Contains special characters
+      if (/[^A-Za-z0-9]/.test(password)) strength++;
+      
+      // Update UI based on strength
+      if (strength <= 2) {
+        strengthBar.classList.add('strength-weak');
+        strengthText.textContent = 'Weak password';
+      } else if (strength <= 4) {
+        strengthBar.classList.add('strength-medium');
+        strengthText.textContent = 'Medium strength password';
+      } else {
+        strengthBar.classList.add('strength-strong');
+        strengthText.textContent = 'Strong password';
+      }
+    });
+
+    // Form validation and submission
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function cleanPhoneDigits(phone) {
+      // remove non-digits; keep it as string (no leading +)
+      return (phone || '').replace(/\D/g, '');
+    }
+
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const rawPhone = document.getElementById('phone').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const gender = document.getElementById('gender').value;
+      const password = document.getElementById('password').value;
+
+      const msg = document.getElementById('registerMsg');
+      const msgText = document.getElementById('messageText');
+      const msgIcon = document.getElementById('messageIcon');
+      
+      msg.style.display = 'none';
+      msgText.textContent = '';
+      msg.className = 'message';
+
+      // Basic client-side validation
+      if (!name || !rawPhone || !email || !password) {
+        msg.style.display = 'flex';
+        msg.className = 'message error';
+        msgIcon.className = 'fas fa-exclamation-circle';
+        msgText.textContent = 'Please fill all required fields.';
+        return;
+      }
+
+      const phone = cleanPhoneDigits(rawPhone);
+      if (phone.length < 10) {
+        msg.style.display = 'flex';
+        msg.className = 'message error';
+        msgIcon.className = 'fas fa-exclamation-circle';
+        msgText.textContent = 'Please enter a valid mobile number with at least 10 digits.';
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        msg.style.display = 'flex';
+        msg.className = 'message error';
+        msgIcon.className = 'fas fa-exclamation-circle';
+        msgText.textContent = 'Please enter a valid email address.';
+        return;
+      }
+
+      if (password.length < 6) {
+        msg.style.display = 'flex';
+        msg.className = 'message error';
+        msgIcon.className = 'fas fa-exclamation-circle';
+        msgText.textContent = 'Password should be at least 6 characters.';
+        return;
+      }
+
+      // Show loading state
+      const submitBtn = this.querySelector('.submit-btn');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+      submitBtn.disabled = true;
+
+      try {
+        const data = await FinZi.postJson('/register', {
+          name: name,
+          phone: phone,
+          email: email,
+          gender: gender,
+          password: password
+        });
+        msg.style.display = 'flex';
+        
+        if (data && data.success) {
+          msg.className = 'message success';
+          msgIcon.className = 'fas fa-check-circle';
+          msgText.textContent = 'Registration successful — redirecting to login...';
+          
+          setTimeout(() => window.location.href = '/login', 1500);
+        } else {
+          msg.className = 'message error';
+          msgIcon.className = 'fas fa-exclamation-circle';
+          msgText.textContent = data.message || 'Registration completed but no success flag returned.';
+        }
+      } catch (err) {
+        console.error('Register error:', err);
+        msg.style.display = 'flex';
+        msg.className = 'message error';
+        msgIcon.className = 'fas fa-exclamation-circle';
+        msgText.textContent = err.message || 'Registration failed. Please try again.';
+      } finally {
+        // Reset button state
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

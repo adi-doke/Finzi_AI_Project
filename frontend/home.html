@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FinZi - Home</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #138f87;
+      --primary-dark: #0f6f69;
+      --primary-light: #dff7f4;
+      --secondary: #12c4a8;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--gray-800);
+      background: linear-gradient(180deg, #f7fffd 0%, #eafaf7 100%);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(34, 48, 71, 0.08);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 24px;
+      color: var(--primary);
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .controls a.button, .controls button, .button {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--gray-200);
+      background: white;
+      color: var(--gray-700);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 30px 20px 48px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+      gap: 20px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+
+    .hero-main, .panel, .tab-card {
+      background: rgba(255,255,255,0.92);
+      border: 1px solid rgba(34, 48, 71, 0.08);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-main {
+      border-radius: 22px;
+      padding: 28px;
+      display: grid;
+      align-content: center;
+      gap: 16px;
+      min-height: 260px;
+    }
+
+    .eyebrow {
+      margin: 0;
+      color: var(--primary-dark);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 780px;
+      color: var(--gray-900);
+      font-size: clamp(32px, 5vw, 54px);
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    .hero-main p {
+      margin: 0;
+      max-width: 760px;
+      color: var(--gray-600);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .button.primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .panel {
+      border-radius: 22px;
+      padding: 22px;
+    }
+
+    .profile-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .metric {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(34, 48, 71, 0.08);
+    }
+
+    .metric:last-child { border-bottom: 0; }
+    .metric span { color: var(--gray-600); font-size: 13px; }
+    .metric strong { color: var(--gray-900); text-align: right; }
+
+    .section-title {
+      margin: 26px 0 14px;
+      color: var(--gray-900);
+      font-size: 22px;
+    }
+
+    .tab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+      gap: 16px;
+    }
+
+    .tab-card {
+      min-height: 190px;
+      border-radius: 18px;
+      padding: 20px;
+      color: inherit;
+      text-decoration: none;
+      display: grid;
+      align-content: space-between;
+      gap: 18px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .tab-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(19, 143, 135, 0.26);
+    }
+
+    .tab-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-size: 18px;
+    }
+
+    .tab-card h2 {
+      margin: 0 0 8px;
+      color: var(--gray-900);
+      font-size: 18px;
+    }
+
+    .tab-card p {
+      margin: 0;
+      color: var(--gray-600);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .tab-card .open {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary-dark);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; }
+    }
+  </style>
+  <link rel="stylesheet" href="/static/finzi-theme.css">
+</head>
+<body>
+  <nav class="topbar">
+    <div class="brand"><i class="fas fa-chart-line"></i> FinZi</div>
+    <div class="controls"></div>
+  </nav>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-main">
+        <p class="eyebrow">Financial command center</p>
+        <h1 id="welcomeTitle">Welcome back to FinZi</h1>
+        <p>Move from quick questions to deeper planning without losing context: chat with the assistant, review spending insights, and track assets with confidence.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="/chat_page"><i class="fas fa-comments"></i> Open Chat</a>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <p class="eyebrow">Snapshot</p>
+        <div class="profile-grid">
+          <div class="metric"><span>Bank balance</span><strong id="bankBalance">-</strong></div>
+          <div class="metric"><span>Investments</span><strong id="investments">-</strong></div>
+          <div class="metric"><span>Loan balance</span><strong id="loanBalance">-</strong></div>
+          <div class="metric"><span>Credit score</span><strong id="creditScore">-</strong></div>
+        </div>
+      </aside>
+    </section>
+
+    <h2 class="section-title">Your FinZi Workspace</h2>
+    <section class="tab-grid">
+      <a class="tab-card" href="/chat_page">
+        <div>
+          <div class="tab-icon"><i class="fas fa-comments"></i></div>
+          <h2>Chat</h2>
+          <p>Ask about spending, savings, budgets, debt, receipts, and what to do next.</p>
+        </div>
+        <span class="open">Open chat <i class="fas fa-arrow-right"></i></span>
+      </a>
+
+      <a class="tab-card" href="/insights">
+        <div>
+          <div class="tab-icon"><i class="fas fa-lightbulb"></i></div>
+          <h2>Insights</h2>
+          <p>See trends across income, expenses, merchants, categories, and net worth.</p>
+        </div>
+        <span class="open">View insights <i class="fas fa-arrow-right"></i></span>
+      </a>
+
+      <a class="tab-card" href="/portfolio">
+        <div>
+          <div class="tab-icon"><i class="fas fa-chart-pie"></i></div>
+          <h2>My Portfolio</h2>
+          <p>Track bank balance, mutual funds, stocks, loans, credit score, and asset mix.</p>
+        </div>
+        <span class="open">Check portfolio <i class="fas fa-arrow-right"></i></span>
+      </a>
+
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const user = await FinZi.ensureAuth();
+      if (!user) return;
+
+      document.getElementById("welcomeTitle").textContent = `Welcome back, ${user.name || "there"}`;
+
+      try {
+        const payload = await FinZi.getJson("/api/profile");
+        const finance = payload.finance || {};
+        document.getElementById("bankBalance").textContent = FinZi.formatCurrency(finance.bank_balance || 0);
+        document.getElementById("investments").textContent = FinZi.formatCurrency((finance.mutual_funds || 0) + (finance.stocks || 0));
+        document.getElementById("loanBalance").textContent = FinZi.formatCurrency(finance.loan || 0);
+        document.getElementById("creditScore").textContent = finance.credit_score || "-";
+      } catch (error) {
+        console.warn("Home snapshot unavailable", error);
+      }
+    });
+  </script>
+</body>
+</html>

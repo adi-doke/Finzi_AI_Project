@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FinZi — My Portfolio</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --primary: #138f87;
+      --primary-dark: #0f6f69;
+      --primary-light: #dff7f4;
+      --secondary: #12c4a8;
+      --secondary-dark: #059669;
+      --warning: #f59e0b;
+      --warning-dark: #d97706;
+      --error: #dc2626;
+      --error-light: #fef2f2;
+      --success: #059669;
+      --success-light: #f0fdf4;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --radius: 8px;
+      --radius-lg: 12px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(18, 196, 168, 0.16), transparent 26%),
+        radial-gradient(circle at top right, rgba(19, 143, 135, 0.12), transparent 22%),
+        linear-gradient(135deg, #f7fffd 0%, #eafaf7 100%);
+      min-height: 100vh;
+      color: var(--gray-800);
+      line-height: 1.5;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--gray-200);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 24px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand i {
+      font-size: 22px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .controls a.button,
+    .controls button {
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-300);
+      background: white;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--gray-700);
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .controls a.button:hover,
+    .controls button:hover {
+      background: var(--gray-50);
+      border-color: var(--gray-400);
+      transform: translateY(-1px);
+    }
+
+    .controls button.primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .controls button.primary:hover {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+    }
+
+    /* Page layout */
+    .container {
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 20px;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .page-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--gray-900);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .page-title i {
+      color: var(--primary);
+    }
+
+    .controls-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .refresh-btn {
+      background: white;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius);
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .refresh-btn:hover {
+      background: var(--gray-50);
+      border-color: var(--gray-400);
+    }
+
+    .last-updated {
+      font-size: 13px;
+      color: var(--gray-500);
+    }
+
+    /* Top summary cards */
+    .top-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    .card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid var(--gray-200);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card h3 {
+      margin: 0 0 8px 0;
+      font-size: 14px;
+      color: var(--gray-600);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card h3 i {
+      font-size: 16px;
+    }
+
+    .card p {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .card .description {
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--gray-500);
+    }
+
+    .card.net-worth {
+      border-top: 4px solid var(--primary);
+    }
+
+    .card.credit-score {
+      border-top: 4px solid var(--secondary);
+    }
+
+    .card.assets {
+      border-top: 4px solid var(--success);
+    }
+
+    .card.liabilities {
+      border-top: 4px solid var(--warning);
+    }
+
+    /* Charts area */
+    .charts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .chart-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--gray-200);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      min-height: 380px;
+    }
+
+    .chart-title {
+      margin-bottom: 16px;
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--gray-800);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+
+    .chart-title i {
+      color: var(--primary);
+    }
+
+    .chart-container {
+      position: relative;
+      flex-grow: 1;
+      width: 100%;
+      aspect-ratio: 1.62 / 1;
+      padding: 10px;
+    }
+
+    .chart-note {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--gray-500);
+      text-align: center;
+    }
+
+    .credit-score-container {
+      grid-column: 1 / -1;
+      min-height: auto;
+    }
+
+    .credit-score-bar {
+      height: 24px;
+      background: var(--gray-200);
+      border-radius: 12px;
+      margin-top: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .credit-score-fill {
+      height: 100%;
+      border-radius: 12px;
+      background: linear-gradient(90deg, var(--error) 0%, var(--warning) 50%, var(--success) 100%);
+      transition: width 1s ease;
+    }
+
+    .credit-score-marker {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 2px;
+      background: var(--gray-800);
+    }
+
+    .credit-score-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--gray-600);
+    }
+
+    /* Message area */
+    .message {
+      margin-top: 20px;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .message.error {
+      background: var(--error-light);
+      color: var(--error);
+      border-left: 4px solid var(--error);
+    }
+
+    .message.success {
+      background: var(--success-light);
+      color: var(--success);
+      border-left: 4px solid var(--success);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .charts {
+        grid-template-columns: 1fr;
+      }
+
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .controls-row {
+        align-self: flex-end;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .top-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .container {
+        padding: 0 16px;
+      }
+
+      .topbar {
+        padding: 14px 16px;
+      }
+
+      .page-title {
+        font-size: 24px;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="/static/finzi-theme.css">
+</head>
+
+<body>
+  <nav class="topbar">
+    <div class="brand">
+      <i class="fas fa-chart-line"></i>
+      FinZi
+    </div>
+
+    <div class="controls">
+      <a id="chatLink" class="button" href="/chat_page" >
+        <i class="fas fa-comments"></i>
+        Chat
+      </a>
+      <a id="insightsLink" class="button" href="/insights">
+        <i class="fas fa-lightbulb"></i>
+        Insights
+      </a>
+      <button id="logoutBtn" class="primary" data-finzi-logout>
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+      </button>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">
+        <i class="fas fa-chart-bar"></i>
+        My Portfolio
+      </h1>
+      <div class="controls-row">
+        <button id="refreshBtn" class="refresh-btn">
+          <i class="fas fa-sync-alt"></i>
+          Refresh
+        </button>
+        <div id="lastUpdated" class="last-updated">&nbsp;</div>
+      </div>
+    </div>
+
+    <!-- Top summary cards -->
+    <div class="top-cards">
+      <div class="card assets">
+        <h3><i class="fas fa-wallet"></i> Total Assets</h3>
+        <p id="totalAssets">—</p>
+        <div class="description">Sum of bank, mutual funds & stocks</div>
+      </div>
+
+      <div class="card liabilities">
+        <h3><i class="fas fa-credit-card"></i> Total Liabilities</h3>
+        <p id="totalLiabilities">—</p>
+        <div class="description">Loans and outstanding debt</div>
+      </div>
+
+      <div class="card net-worth">
+        <h3><i class="fas fa-balance-scale"></i> Net Worth</h3>
+        <p id="netWorth">—</p>
+        <div class="description">Assets − Liabilities</div>
+      </div>
+
+      <div class="card credit-score">
+        <h3><i class="fas fa-star"></i> Credit Score</h3>
+        <p id="creditScore">—</p>
+        <div class="description">Higher is better</div>
+      </div>
+    </div>
+
+    <!-- Charts area -->
+    <div class="charts">
+      <div class="chart-card">
+        <h4 class="chart-title"><i class="fas fa-chart-pie"></i> Asset Allocation</h4>
+        <div class="chart-container">
+          <canvas id="assetPie"></canvas>
+        </div>
+        <div id="allocationNote" class="chart-note"></div>
+      </div>
+
+      <div class="chart-card">
+        <h4 class="chart-title"><i class="fas fa-chart-bar"></i> Assets vs Liabilities</h4>
+        <div class="chart-container">
+          <canvas id="assetsBar" height="300px;"></canvas>
+        </div>
+        <div class="chart-note">Blue = Assets, Orange = Liabilities</div>
+      </div>
+
+      <div class="chart-card credit-score-container">
+        <h4 class="chart-title"><i class="fas fa-chart-line"></i> Credit Score</h4>
+        <div class="credit-score-bar">
+          <div class="credit-score-fill" id="creditScoreFill"></div>
+          <div class="credit-score-marker" id="creditScoreMarker"></div>
+        </div>
+        <div class="credit-score-labels">
+          <span>300</span>
+          <span>600</span>
+          <span>900</span>
+        </div>
+        <div class="chart-note">Visual representation of your credit score (scale max = 900)</div>
+      </div>
+    </div>
+
+
+    <div id="message" class="message" style="display:none"></div>
+  </div>
+
+ <script src="/static/app.js"></script>
+ <script>
+document.addEventListener('DOMContentLoaded', async function () {
+    const user = await FinZi.ensureAuth();
+    if (!user) return;
+    const messageBox = document.getElementById('message');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const lastUpdated = document.getElementById('lastUpdated');
+    const chatLink = document.getElementById('chatLink');
+    const insightsLink = document.getElementById('insightsLink');
+    const logoutBtn = document.getElementById('logoutBtn');
+    [chatLink, insightsLink, logoutBtn]
+        .filter(Boolean)
+        .forEach((element) => {
+            element.style.display = 'inline-flex';
+        });
+
+    // ⭐ Global Chart Registry
+    window.portfolioCharts = {
+        assetPie: null,
+        assetsBar: null
+    };
+
+    function destroyChart(id) {
+        if (window.portfolioCharts[id]) {
+            window.portfolioCharts[id].destroy();
+            window.portfolioCharts[id] = null;
+        }
+    }
+
+    function formatCurrency(value, short = false) {
+        if (isNaN(value)) return '—';
+        if (short && value >= 100000) {
+            return '₹' + (value / 1000).toFixed(0) + 'K';
+        }
+        return '₹' + value.toLocaleString();
+    }
+
+    async function loadPortfolio() {
+        try {
+            const data = await FinZi.getJson('/api/me/finance');
+            const finance = data.finance || data;
+
+            messageBox.style.display = "none";
+            lastUpdated.textContent = `Last updated: ${new Date().toLocaleString()}`;
+
+            const totalAssets = (finance.bank_balance || 0) + (finance.mutual_funds || 0) + (finance.stocks || 0);
+            const totalLiabilities = finance.loan || 0;
+            const netWorth = totalAssets - totalLiabilities;
+            const creditScore = finance.credit_score || 0;
+
+            document.getElementById('totalAssets').textContent = formatCurrency(totalAssets);
+            document.getElementById('totalLiabilities').textContent = formatCurrency(totalLiabilities);
+            document.getElementById('netWorth').textContent = formatCurrency(netWorth);
+            document.getElementById('creditScore').textContent = creditScore;
+
+            // Credit Score visuals
+            const pct = (creditScore - 300) / 600 * 100;
+            document.getElementById('creditScoreFill').style.width = `${pct}%`;
+            document.getElementById('creditScoreMarker').style.left = `${pct}%`;
+
+            // ⭐ Destroy old charts before creating new ones
+            destroyChart("assetPie");
+            destroyChart("assetsBar");
+
+            // Pie Chart
+            const pieCtx = document.getElementById('assetPie').getContext('2d');
+            window.portfolioCharts.assetPie = new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Bank', 'Mutual Funds', 'Stocks'],
+                    datasets: [{
+                        data: [finance.bank_balance, finance.mutual_funds, finance.stocks],
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: { plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // Bar Chart
+            const barCtx = document.getElementById('assetsBar').getContext('2d');
+            window.portfolioCharts.assetsBar = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Assets', 'Liabilities'],
+                    datasets: [{
+                        label: 'Amount',
+                        data: [totalAssets, totalLiabilities],
+                        backgroundColor: ['rgba(59,130,246,0.7)', 'rgba(245,158,11,0.7)'],
+                        borderColor: ['rgb(59,130,246)', 'rgb(245,158,11)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: v => formatCurrency(v, true) }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: c => `${c.label}: ${formatCurrency(c.raw)}` } }
+                    }
+                }
+            });
+
+            // Allocation Note
+            const allocationNote = document.getElementById('allocationNote');
+            if (totalAssets > 0) {
+                const b = Math.round((finance.bank_balance / totalAssets) * 100);
+                const m = Math.round((finance.mutual_funds / totalAssets) * 100);
+                const s = Math.round((finance.stocks / totalAssets) * 100);
+                allocationNote.textContent = `Allocation: Bank ${b}%, Mutual Funds ${m}%, Stocks ${s}%`;
+            }
+
+        } catch (err) {
+            messageBox.textContent = "Error loading portfolio: " + err.message;
+            messageBox.className = "message error";
+            messageBox.style.display = "flex";
+        }
+    }
+
+    loadPortfolio();
+
+    refreshBtn.addEventListener('click', () => {
+        refreshBtn.querySelector('i').classList.add('fa-spin');
+        loadPortfolio().finally(() => {
+            setTimeout(() => refreshBtn.querySelector('i').classList.remove('fa-spin'), 800);
+        });
+    });
+});
+</script>
+
+
+</body>
+
+</html>

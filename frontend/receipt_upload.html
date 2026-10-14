@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FinZi — Receipt Upload</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <style>
+    :root {
+      --primary: #138f87;
+      --primary-dark: #0f6f69;
+      --primary-light: #dff7f4;
+      --secondary: #12c4a8;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-600: #4b5563;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --radius-lg: 16px;
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--gray-800);
+      background:
+        radial-gradient(circle at top left, rgba(18, 196, 168, 0.16), transparent 24%),
+        radial-gradient(circle at top right, rgba(19, 143, 135, 0.12), transparent 18%),
+        linear-gradient(135deg, #f7fffd 0%, #eafaf7 100%);
+      min-height: 100vh;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(34, 48, 71, 0.08);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 24px;
+      color: var(--primary);
+    }
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .controls a.button, .controls button {
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--gray-200);
+      background: white;
+      color: var(--gray-700, #374151);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .controls a.button:hover, .controls button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+      border-color: rgba(19, 143, 135, 0.28);
+    }
+    .controls .primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px 20px 40px;
+    }
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+    .hero h1 {
+      margin: 0 0 8px 0;
+      font-size: 34px;
+      color: var(--gray-900);
+    }
+    .hero p {
+      margin: 0;
+      color: var(--gray-600);
+      max-width: 780px;
+      line-height: 1.6;
+    }
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px;
+      border-radius: 999px;
+      text-decoration: none;
+      background: var(--primary);
+      color: white;
+      font-weight: 700;
+      box-shadow: 0 10px 24px rgba(19, 143, 135, 0.2);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .card {
+      background: rgba(255,255,255,0.94);
+      border: 1px solid rgba(34, 48, 71, 0.08);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+    .upload-box {
+      border: 1.5px dashed rgba(19, 143, 135, 0.35);
+      border-radius: 18px;
+      padding: 18px;
+      background: linear-gradient(180deg, rgba(219, 234, 254, 0.35), rgba(255,255,255,0.65));
+    }
+    .upload-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+    .field-label {
+      display: block;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 8px;
+    }
+    input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      background: white;
+    }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      text-decoration: none;
+    }
+    .button:hover { transform: translateY(-1px); }
+    .button.primary { background: var(--primary); color: white; box-shadow: 0 10px 18px rgba(19, 143, 135, 0.18); }
+    .button.ghost { background: white; color: var(--gray-700); border: 1px solid var(--gray-200); }
+
+    .preview {
+      margin-top: 16px;
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 220px 1fr;
+    }
+    .preview img {
+      width: 100%;
+      max-height: 280px;
+      object-fit: contain;
+      border-radius: 14px;
+      background: white;
+      border: 1px solid var(--gray-200);
+    }
+    .status {
+      font-size: 14px;
+      color: var(--gray-600);
+      line-height: 1.6;
+      min-height: 28px;
+    }
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .result-item {
+      padding: 14px;
+      border-radius: 14px;
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+    }
+    .result-item .label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--gray-600);
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+    .result-item .value {
+      font-size: 16px;
+      color: var(--gray-900);
+      font-weight: 700;
+    }
+    .raw-text {
+      margin-top: 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 14px;
+      padding: 14px;
+      min-height: 180px;
+      overflow: auto;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 960px) {
+      .layout, .preview, .upload-row { grid-template-columns: 1fr; }
+    }
+  </style>
+  <link rel="stylesheet" href="/static/finzi-theme.css">
+</head>
+<body>
+  <nav class="topbar">
+    <div class="brand"><i class="fas fa-receipt"></i> FinZi Receipt Upload</div>
+    <div class="controls">
+      <a class="button" href="/chat_page"><i class="fas fa-comments"></i> Chat</a>
+      <a class="button" href="/insights"><i class="fas fa-lightbulb"></i> Insights</a>
+      <a class="button" href="/portfolio"><i class="fas fa-chart-pie"></i> Portfolio</a>
+      <a class="button" href="/budget"><i class="fas fa-bullseye"></i> Budget Planner</a>
+      <a class="button" href="/monthly-report"><i class="fas fa-file-pdf"></i> Monthly Report</a>
+      <button class="primary" data-finzi-logout><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="hero">
+      <div>
+        <h1>Upload a receipt and extract the data instantly</h1>
+        <p>Drop in a bill photo, let OCR read the text in your browser, and FinZi will infer the merchant, date, amount, and likely category automatically.</p>
+      </div>
+      <a class="cta" href="/monthly-report"><i class="fas fa-file-pdf"></i> View Monthly Report</a>
+    </section>
+
+    <section class="layout">
+      <div class="card">
+        <h2 style="margin-top:0;">Receipt OCR</h2>
+        <div class="upload-box">
+          <label class="field-label" for="receiptFile">Choose receipt image</label>
+          <div class="upload-row">
+            <input id="receiptFile" type="file" accept="image/*" />
+            <button id="analyzeBtn" class="button primary" type="button"><i class="fas fa-wand-magic-sparkles"></i> Analyze Receipt</button>
+          </div>
+          <div id="ocrStatus" class="status">Select a receipt image to begin.</div>
+          <div class="preview">
+            <img id="receiptPreview" alt="Receipt preview" style="display:none" />
+            <div>
+              <div class="status" id="ocrProgress"></div>
+              <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+                <button id="resetBtn" class="button ghost" type="button"><i class="fas fa-rotate-left"></i> Reset</button>
+                <a class="button ghost" href="/budget"><i class="fas fa-bullseye"></i> Use in Budget Planner</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-top:0;">Extracted Details</h2>
+        <div class="result-grid">
+          <div class="result-item"><div class="label">Merchant</div><div id="merchantValue" class="value">-</div></div>
+          <div class="result-item"><div class="label">Amount</div><div id="amountValue" class="value">-</div></div>
+          <div class="result-item"><div class="label">Date</div><div id="dateValue" class="value">-</div></div>
+          <div class="result-item"><div class="label">Category</div><div id="categoryValue" class="value">-</div></div>
+        </div>
+        <div style="margin-top:14px;" class="result-item">
+          <div class="label">Raw OCR Text</div>
+          <div id="rawText" class="raw-text">OCR output will appear here.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async function () {
+      const user = await FinZi.ensureAuth();
+      if (!user) return;
+
+      const receiptFile = document.getElementById("receiptFile");
+      const analyzeBtn = document.getElementById("analyzeBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const receiptPreview = document.getElementById("receiptPreview");
+      const ocrStatus = document.getElementById("ocrStatus");
+      const ocrProgress = document.getElementById("ocrProgress");
+      const rawText = document.getElementById("rawText");
+      const merchantValue = document.getElementById("merchantValue");
+      const amountValue = document.getElementById("amountValue");
+      const dateValue = document.getElementById("dateValue");
+      const categoryValue = document.getElementById("categoryValue");
+      let selectedFile = null;
+
+      function resetOutput() {
+        rawText.textContent = "OCR output will appear here.";
+        merchantValue.textContent = "-";
+        amountValue.textContent = "-";
+        dateValue.textContent = "-";
+        categoryValue.textContent = "-";
+        ocrProgress.textContent = "";
+      }
+
+      receiptFile.addEventListener("change", () => {
+        selectedFile = receiptFile.files && receiptFile.files[0] ? receiptFile.files[0] : null;
+        resetOutput();
+        if (!selectedFile) {
+          receiptPreview.style.display = "none";
+          receiptPreview.removeAttribute("src");
+          ocrStatus.textContent = "Select a receipt image to begin.";
+          return;
+        }
+        const url = URL.createObjectURL(selectedFile);
+        receiptPreview.src = url;
+        receiptPreview.style.display = "block";
+        ocrStatus.textContent = `Ready to analyze ${selectedFile.name}.`;
+      });
+
+      analyzeBtn.addEventListener("click", async () => {
+        if (!selectedFile) {
+          ocrStatus.textContent = "Please choose a receipt image first.";
+          return;
+        }
+
+        analyzeBtn.disabled = true;
+        ocrStatus.textContent = "Running OCR in your browser...";
+        ocrProgress.textContent = "Loading OCR engine...";
+        rawText.textContent = "";
+
+        try {
+          const result = await Tesseract.recognize(selectedFile, "eng", {
+            logger: (message) => {
+              if (message.status) {
+                const pct = typeof message.progress === "number" ? ` ${(message.progress * 100).toFixed(0)}%` : "";
+                ocrProgress.textContent = `${message.status}${pct}`;
+              }
+            },
+          });
+          const extractedText = (result.data && result.data.text) ? result.data.text.trim() : "";
+          if (!extractedText) {
+            throw new Error("No readable text was detected in the image.");
+          }
+
+          rawText.textContent = extractedText;
+          ocrStatus.textContent = "OCR complete. Parsing receipt details...";
+
+          const response = await FinZi.postJson("/api/receipts/analyze", {
+            raw_text: extractedText,
+            filename: selectedFile.name,
+          });
+
+          const receipt = response.receipt || {};
+          merchantValue.textContent = receipt.merchant || "Unknown";
+          amountValue.textContent = receipt.amount != null ? FinZi.formatCurrency(receipt.amount) : "-";
+          dateValue.textContent = receipt.date || "-";
+          categoryValue.textContent = receipt.category || "-";
+          ocrStatus.textContent = "Receipt parsed successfully.";
+          ocrProgress.textContent = "";
+        } catch (error) {
+          ocrStatus.textContent = "Receipt analysis failed.";
+          ocrProgress.textContent = "";
+          rawText.textContent = error.message || String(error);
+        } finally {
+          analyzeBtn.disabled = false;
+        }
+      });
+
+      resetBtn.addEventListener("click", () => {
+        receiptFile.value = "";
+        selectedFile = null;
+        receiptPreview.style.display = "none";
+        receiptPreview.removeAttribute("src");
+        ocrStatus.textContent = "Select a receipt image to begin.";
+        resetOutput();
+      });
+    });
+  </script>
+</body>
+</html>

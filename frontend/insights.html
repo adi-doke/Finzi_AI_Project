@@ -1,0 +1,286 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Finzi — Insights</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    padding: 20px;
+    background:
+      radial-gradient(circle at top left, rgba(18, 196, 168, 0.16), transparent 28%),
+      radial-gradient(circle at top right, rgba(19, 143, 135, 0.12), transparent 22%),
+      linear-gradient(135deg, #f7fffd 0%, #eafaf7 100%);
+  }
+
+  h1 {
+    margin-bottom: 20px;
+    color: #16222f;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card h3 {
+    margin: 0 0 10px 0;
+  }
+
+  /* ⭐ FIX — uniform graph size */
+  canvas {
+    width: 100% !important;
+    height: 260px !important;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 20px;
+    background: rgba(255,255,255,0.9);
+    border: 1px solid rgba(34,48,71,0.08);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(15,23,42,0.06);
+    margin-bottom: 20px;
+  }
+  .brand {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f6f69;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  .controls a.button, .controls button {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid #dbe2ea;
+    background: #fff;
+    color: #374151;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+  .controls .primary {
+    background: #138f87;
+    color: white;
+    border-color: #138f87;
+  }
+  </style>
+  <link rel="stylesheet" href="/static/finzi-theme.css">
+</head>
+
+<body>
+  <nav class="topbar">
+    <div class="brand"><i class="fas fa-chart-line"></i> FinZi Insights</div>
+    <div class="controls">
+      <a id="chatLink" class="button" href="/chat_page"><i class="fas fa-comments"></i> Chat</a>
+      <a id="portfolioLink" class="button" href="/portfolio"><i class="fas fa-chart-pie"></i> Portfolio</a>
+      <a id="insightsLink" class="button" href="/insights"><i class="fas fa-lightbulb"></i> Insights</a>
+      <button id="logoutBtn" class="primary" data-finzi-logout><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </nav>
+
+  <h1>Insights</h1>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Monthly Spending</h3>
+      <canvas id="monthlyChart"></canvas>
+    </div>
+
+    <div class="card">
+      <h3>Income vs Expenses</h3>
+      <canvas id="incomeChart"></canvas>
+    </div>
+
+    <div class="card">
+      <h3>Category Spending</h3>
+      <canvas id="categoryChart"></canvas>
+    </div>
+
+    <div class="card">
+      <h3>Top Merchants</h3>
+      <canvas id="merchantChart"></canvas>
+    </div>
+
+    <div class="card" style="grid-column:1 / -1">
+      <h3>Net Worth</h3>
+      <canvas id="netChart"></canvas>
+    </div>
+
+    <div class="card" style="grid-column:1 / -1">
+      <h3>AI Financial Insights</h3>
+      <p id="aiSummary" style="font-size:16px; font-weight:500; color:#374151; line-height:1.6; margin-bottom:16px;">
+        Loading your personalized insights...
+      </p>
+      <div id="insightCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;"></div>
+    </div>
+  </div>
+
+<script src="/static/app.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", async function() {
+  const user = await FinZi.ensureAuth();
+  if (!user) return;
+
+  const apiBase = "/api/insights";
+  window.charts = {};
+  const aiSummary = document.getElementById("aiSummary");
+  const insightCards = document.getElementById("insightCards");
+  const chatLink = document.getElementById("chatLink");
+  const portfolioLink = document.getElementById("portfolioLink");
+  const insightsLink = document.getElementById("insightsLink");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  [chatLink, portfolioLink, insightsLink, logoutBtn]
+    .filter(Boolean)
+    .forEach((element) => {
+      element.style.display = "inline-flex";
+    });
+
+  async function fetchJson(url){
+    return FinZi.getJson(url);
+  }
+
+  function renderInsightCard(item) {
+    const card = document.createElement("div");
+    const color = item.severity === "warning" ? "#f59e0b" : item.severity === "success" ? "#12c4a8" : "#138f87";
+    card.className = "card";
+    card.style.borderLeft = `4px solid ${color}`;
+    card.innerHTML = `
+      <div style="font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:${color}; margin-bottom:8px;">${item.type}</div>
+      <h4 style="margin:0 0 8px 0; font-size:17px; color:#111827;">${FinZi.escapeHtml(item.title)}</h4>
+      <p style="margin:0; color:#4b5563; line-height:1.6;">${FinZi.escapeHtml(item.detail)}</p>
+    `;
+    return card;
+  }
+
+  async function loadInsights() {
+    aiSummary.textContent = "Loading your personalized insights...";
+    insightCards.innerHTML = "";
+    try {
+      const [ms, ie, cs, tm, nw] = await Promise.all([
+        fetchJson(`${apiBase}/monthly_spending`),
+        fetchJson(`${apiBase}/income_vs_expenses`),
+        fetchJson(`${apiBase}/category_spending`),
+        fetchJson(`${apiBase}/top_merchants?limit=10`),
+        fetchJson(`${apiBase}/net_worth_trend`),
+      ]);
+
+      renderLine("monthlyChart", ms.months, ms.amounts, "Spent (INR)");
+      renderMultiLine("incomeChart", ie.months, [
+        {label:"Income", data:ie.income},
+        {label:"Expenses", data:ie.expenses},
+      ]);
+      renderBar("categoryChart", cs.categories, cs.amounts, "Spent by Category");
+      renderBar("merchantChart", tm.merchants, tm.amounts, "Top Merchants");
+      renderLine("netChart", nw.months, nw.net_worth, "Net Worth (INR)");
+    } catch (e) {
+      aiSummary.textContent = "Failed to load chart data.";
+      alert("Failed to load insights charts: " + (e.message || e));
+      return;
+    }
+
+    try {
+      const ai = await fetchJson(`${apiBase}/ai`);
+      aiSummary.textContent = ai.summary || "No AI summary available yet.";
+      (ai.insights || []).forEach((item) => insightCards.appendChild(renderInsightCard(item)));
+      if (!ai.insights || !ai.insights.length) {
+        const empty = document.createElement("div");
+        empty.className = "card";
+        empty.style.gridColumn = "1 / -1";
+        empty.textContent = "No notable insights were generated from the available data.";
+        insightCards.appendChild(empty);
+      }
+    } catch (e) {
+      aiSummary.textContent = "Charts loaded, but the AI summary is temporarily unavailable.";
+      const empty = document.createElement("div");
+      empty.className = "card";
+      empty.style.gridColumn = "1 / -1";
+      empty.textContent = "The AI summary could not be loaded right now, but the chart insights above are still available.";
+      insightCards.appendChild(empty);
+    }
+  }
+
+  await loadInsights();
+
+
+  /* ---------------- Chart Helpers ---------------- */
+
+  function destroyOld(canvasId){
+    if (window.charts[canvasId]) {
+      try { window.charts[canvasId].destroy(); }
+      catch(err){ console.warn("Destroy failed", err); }
+    }
+  }
+
+  function renderLine(canvasId, labels, data, label){
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    destroyOld(canvasId);
+
+    window.charts[canvasId] = new Chart(ctx, {
+      type: 'line',
+      data: { labels, datasets: [{ label, data, fill: true, tension: 0.3 }] },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  }
+
+  function renderMultiLine(canvasId, labels, datasets){
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    destroyOld(canvasId);
+
+    window.charts[canvasId] = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: datasets.map(d => ({
+          label: d.label,
+          data: d.data,
+          tension: 0.3
+        }))
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  }
+
+  function renderBar(canvasId, labels, data, label){
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    destroyOld(canvasId);
+
+    window.charts[canvasId] = new Chart(ctx, {
+      type: 'bar',
+      data: { labels, datasets: [{ label, data }] },
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false }
+    });
+  }
+}); 
+</script>
+
+</body>
+</html>

@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FinZi — Chat</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #138f87;
+      --primary-dark: #0f6f69;
+      --primary-light: #dff7f4;
+      --secondary: #12c4a8;
+      --gray-200: #e5e7eb;
+      --gray-700: #374151;
+      --gray-900: #111827;
+      --gray-100: #f3f4f6;
+      --success: #059669;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --radius: 8px;
+      --radius-lg: 12px;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(18, 196, 168, 0.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(19, 143, 135, 0.14), transparent 24%),
+        linear-gradient(180deg, #f7fffd 0%, #eafaf7 100%);
+      min-height: 100vh;
+      color: var(--gray-800);
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+    }
+
+    /* ---------- Topbar ---------- */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      background: rgba(255,255,255,0.95);
+      border-bottom: 1px solid var(--gray-200);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: var(--shadow-sm);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+      gap: 8px;
+    }
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .controls a.button, .controls button {
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-200);
+      background: white;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--gray-700);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .controls a.button:hover {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+    }
+    .controls button.primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .controls button.primary:hover {
+      background: var(--primary-dark);
+    }
+
+    /* ---------- Chat ---------- */
+    main {
+      width: 100%;
+    }
+    .chat-shell {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 18px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 24px;
+      min-height: calc(100vh - 80px);
+    }
+    .chat-sidebar {
+      position: sticky;
+      top: 104px;
+      align-self: start;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid var(--gray-200);
+      border-radius: 24px;
+      box-shadow: 0 18px 36px rgba(34, 48, 71, 0.07);
+      overflow: hidden;
+    }
+    .chat-sidebar-header {
+      padding: 18px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .chat-sidebar-title {
+      margin: 0 0 6px;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--gray-900);
+    }
+    .chat-sidebar-subtitle {
+      margin: 0;
+      color: var(--gray-600);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .chat-sidebar-body {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+    .chat-sidebar-actions {
+      display: grid;
+      gap: 10px;
+    }
+    .chat-sidebar-search {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--gray-200);
+      padding: 12px 14px;
+      font: inherit;
+      color: var(--gray-900);
+      background: white;
+    }
+    .chat-sidebar-section-title {
+      margin: 0 0 10px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--gray-500);
+      font-weight: 800;
+    }
+    .chat-sidebar-list {
+      display: grid;
+      gap: 10px;
+      max-height: calc(100vh - 320px);
+      overflow: auto;
+      padding-right: 4px;
+    }
+    .chat-sidebar-item {
+      text-align: left;
+      border: 1px solid var(--gray-200);
+      background: white;
+      border-radius: 18px;
+      padding: 14px;
+      cursor: pointer;
+      display: grid;
+      gap: 6px;
+      box-shadow: 0 8px 18px rgba(34, 48, 71, 0.04);
+    }
+    .chat-sidebar-item:hover,
+    .chat-sidebar-item.active {
+      border-color: rgba(19, 143, 135, 0.28);
+      background: var(--primary-light);
+    }
+    .chat-sidebar-item-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      color: var(--gray-900);
+      font-weight: 800;
+    }
+    .chat-sidebar-item-preview {
+      color: var(--gray-600);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .chat-sidebar-item-meta {
+      color: var(--gray-500);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+    }
+    .chat-main {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .chat-container {
+      flex: 1;
+      background: white;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--gray-200);
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+    }
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .message {
+      max-width: 70%;
+      padding: 12px 16px;
+      border-radius: var(--radius-lg);
+      line-height: 1.4;
+    }
+    .message.user {
+      align-self: flex-end;
+      background: var(--primary);
+      color: white;
+    }
+    .message.bot {
+      align-self: flex-start;
+      background: var(--gray-100);
+    }
+    .message-time {
+      font-size: 11px;
+      opacity: 0.7;
+      margin-top: 4px;
+    }
+    .chat-input-container {
+      border-top: 1px solid var(--gray-200);
+      padding: 16px;
+      background: var(--gray-100);
+    }
+    .chat-input-wrapper {
+      display: flex;
+      gap: 10px;
+    }
+    .chat-input {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-200);
+      resize: none;
+      min-height: 50px;
+      font-size: 15px;
+    }
+    .send-button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
+    }
+    .send-button:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+    .chat-session-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--gray-200);
+      border-radius: 18px;
+      box-shadow: 0 10px 22px rgba(34, 48, 71, 0.04);
+    }
+    .chat-session-banner strong {
+      color: var(--gray-900);
+    }
+    .chat-session-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-weight: 700;
+    }
+    @media (max-width: 1100px) {
+      .chat-shell {
+        grid-template-columns: 1fr;
+      }
+      .chat-sidebar {
+        position: relative;
+        top: 0;
+      }
+    }
+</style>
+  <link rel="stylesheet" href="/static/finzi-theme.css">
+</head>
+<body>
+  <nav class="topbar">
+    <div class="brand">
+      <i class="fas fa-chart-line"></i>
+      FinZi
+    </div>
+    <div class="controls">
+      <!-- ✅ Added Insights Page Button -->
+      <a id="insightsLink" class="button" href="/insights" style="display:none">
+        <i class="fas fa-lightbulb"></i>
+        Insights
+      </a>
+
+      <a id="portfolioLink" class="button" href="/portfolio" style="display:none">
+        <i class="fas fa-chart-pie"></i>
+        My Portfolio
+      </a>
+
+      <button id="logoutBtn" class="primary" data-finzi-logout style="display:none">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+      </button>
+    </div>
+  </nav>
+
+  <main class="chat-shell">
+    <aside class="chat-sidebar">
+      <div class="chat-sidebar-header">
+        <div class="chat-sidebar-title"><i class="fas fa-sparkles"></i> Chat Hub</div>
+        <p class="chat-sidebar-subtitle">Start a new chat, search history, or jump back into a previous conversation.</p>
+      </div>
+      <div class="chat-sidebar-body">
+        <div class="chat-sidebar-actions">
+          <button type="button" id="newChatBtn" class="button primary" style="justify-content:center;">
+            <i class="fas fa-plus"></i>
+            New Chat
+          </button>
+          <a class="button secondary" href="/insights" style="text-decoration:none;justify-content:center;">Insights</a>
+        </div>
+        <input id="chatSearch" class="chat-sidebar-search" type="search" placeholder="Search chat history" />
+        <div>
+          <div class="chat-sidebar-section-title">Chat history</div>
+          <div id="sessionList" class="chat-sidebar-list"></div>
+        </div>
+      </div>
+    </aside>
+
+    <section class="chat-main">
+      <div class="chat-session-banner" id="chatSessionBanner">
+        <div>
+          <strong id="chatSessionTitle">Live chat</strong>
+          <div id="chatSessionSubtitle" style="color:var(--gray-600);font-size:13px;margin-top:4px;">Ask about spending, budgets, savings, or trends.</div>
+        </div>
+        <button type="button" id="resumeChatBtn" class="chat-session-pill" style="display:none;border:none;cursor:pointer;">
+          <i class="fas fa-rotate-right"></i>
+          Resume live chat
+        </button>
+      </div>
+
+      <div class="chat-container">
+        <div class="chat-messages" id="chatMessages">
+          <div class="message bot">
+            <div class="message-content">
+              Hello! I'm your FinZi financial assistant. How can I help you today?
+            </div>
+            <div class="message-time">Just now</div>
+          </div>
+        </div>
+
+        <div class="chat-input-container">
+          <div class="chat-input-wrapper">
+            <textarea id="chatInput" class="chat-input" placeholder="Type your question..."></textarea>
+            <button id="sendButton" class="send-button" disabled><i class="fas fa-paper-plane"></i></button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+  <script>
+  document.addEventListener("DOMContentLoaded", async function() {
+    const authUser = await FinZi.ensureAuth();
+    if (!authUser) return;
+
+    const chatMessages = document.getElementById("chatMessages");
+    const chatInput = document.getElementById("chatInput");
+    const sendButton = document.getElementById("sendButton");
+    const insightsLink = document.getElementById("insightsLink");
+    const portfolioLink = document.getElementById("portfolioLink");
+    const receiptLink = document.getElementById("receiptLink");
+    const reportLink = document.getElementById("reportLink");
+    const newChatBtn = document.getElementById("newChatBtn");
+    const chatSearch = document.getElementById("chatSearch");
+    const sessionList = document.getElementById("sessionList");
+    const chatSessionTitle = document.getElementById("chatSessionTitle");
+    const chatSessionSubtitle = document.getElementById("chatSessionSubtitle");
+    const resumeChatBtn = document.getElementById("resumeChatBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    let sessions = [];
+    let activeSessionId = null;
+    let viewingSessionId = null;
+
+    [insightsLink, portfolioLink, receiptLink, reportLink, logoutBtn]
+      .filter(Boolean)
+      .forEach((element) => {
+        element.style.display = "inline-flex";
+      });
+
+    const greeting = document.querySelector(".message.bot .message-content");
+    if (greeting) {
+      greeting.textContent = `Hello ${authUser.name || "there"}! I'm your FinZi financial assistant. Ask me about spending, savings, budgets, or trends.`;
+    }
+
+    function nowLabel() {
+      return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    }
+
+    function addMessage(text, sender, streaming = false) {
+      const div = document.createElement("div");
+      div.className = `message ${sender}`;
+      div.innerHTML = `
+        <div class="message-content">${streaming ? text : FinZi.escapeHtml(text).replace(/\n/g, "<br>")}</div>
+        <div class="message-time">${nowLabel()}</div>
+      `;
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      return div;
+    }
+
+    function renderMessages(messages) {
+      chatMessages.innerHTML = "";
+      if (!messages || !messages.length) {
+        addMessage(
+          `Hello ${authUser.name || "there"}! I'm your FinZi financial assistant. Ask me about spending, savings, budgets, or trends.`,
+          "bot"
+        );
+        return;
+      }
+      messages.forEach((message) => {
+        addMessage(message.content, message.role === "assistant" ? "bot" : "user");
+      });
+    }
+
+    function setLiveMode() {
+      viewingSessionId = activeSessionId;
+      chatInput.disabled = false;
+      chatInput.placeholder = "Type your question...";
+      sendButton.disabled = !chatInput.value.trim();
+      resumeChatBtn.style.display = "none";
+      chatSessionTitle.textContent = "Live chat";
+      chatSessionSubtitle.textContent = "Your active conversation is ready.";
+    }
+
+    function setHistoryMode(title) {
+      chatInput.disabled = true;
+      chatInput.value = "";
+      sendButton.disabled = true;
+      chatInput.placeholder = "Open a new chat to continue from here";
+      resumeChatBtn.style.display = "inline-flex";
+      chatSessionTitle.textContent = title || "Chat history";
+      chatSessionSubtitle.textContent = "You are viewing a previous conversation.";
+    }
+
+    function formatRelativeTime(value) {
+      if (!value) return "Recently";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "Recently";
+      const diff = Date.now() - date.getTime();
+      const mins = Math.round(diff / 60000);
+      if (mins < 1) return "Just now";
+      if (mins < 60) return `${mins}m ago`;
+      const hours = Math.round(mins / 60);
+      if (hours < 24) return `${hours}h ago`;
+      const days = Math.round(hours / 24);
+      return `${days}d ago`;
+    }
+
+    function renderSessionList(query = "") {
+      const filter = query.trim().toLowerCase();
+      sessionList.innerHTML = "";
+
+      const filtered = sessions.filter((session) => {
+        if (!filter) return true;
+        return (
+          (session.title || "").toLowerCase().includes(filter) ||
+          (session.preview || "").toLowerCase().includes(filter)
+        );
+      });
+
+      if (!filtered.length) {
+        sessionList.innerHTML = `
+          <div style="padding:14px;border:1px dashed var(--gray-300);border-radius:18px;color:var(--gray-600);font-size:13px;line-height:1.5;">
+            No matching chats yet. Try a different search or start a new chat.
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach((session) => {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = `chat-sidebar-item${session.id === viewingSessionId ? " active" : ""}`;
+        item.innerHTML = `
+          <div class="chat-sidebar-item-title">
+            <span>${FinZi.escapeHtml(session.title || "Chat session")}</span>
+            <span class="chat-sidebar-item-meta">${session.is_active ? "Active" : "History"}</span>
+          </div>
+          <div class="chat-sidebar-item-preview">${FinZi.escapeHtml(session.preview || "No preview available")}</div>
+          <div class="chat-sidebar-item-meta">${formatRelativeTime(session.last_message_at || session.updated_at)}</div>
+        `;
+        item.addEventListener("click", () => {
+          loadSession(session.id, session.title);
+        });
+        sessionList.appendChild(item);
+      });
+    }
+
+    async function loadSessions() {
+      try {
+        const payload = await FinZi.getJson("/api/chat/sessions");
+        sessions = payload.sessions || [];
+        renderSessionList(chatSearch.value);
+      } catch (error) {
+        console.warn("Chat sessions unavailable", error);
+        sessions = [];
+        sessionList.innerHTML = `
+          <div style="padding:14px;border:1px dashed var(--gray-300);border-radius:18px;color:var(--gray-600);font-size:13px;">
+            History is temporarily unavailable.
+          </div>
+        `;
+      }
+    }
+
+    async function loadLiveConversation() {
+      const payload = await FinZi.getJson("/api/chat/history");
+      activeSessionId = payload.session_id || null;
+      viewingSessionId = activeSessionId;
+      renderMessages(payload.messages || []);
+      setLiveMode();
+      renderSessionList(chatSearch.value);
+    }
+
+    async function loadSession(sessionId, title) {
+      try {
+        const payload = await FinZi.getJson(`/api/chat/session/${encodeURIComponent(sessionId)}`);
+        viewingSessionId = sessionId;
+        renderMessages(payload.messages || []);
+        setHistoryMode(title || payload.title);
+        renderSessionList(chatSearch.value);
+      } catch (error) {
+        console.warn("Unable to load selected chat session", error);
+      }
+    }
+
+    async function startNewChat() {
+      try {
+        await FinZi.postJson("/api/chat/reset", {});
+        await loadLiveConversation();
+        await loadSessions();
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      } catch (error) {
+        console.warn("Unable to start a new chat", error);
+      }
+    }
+
+    resumeChatBtn.addEventListener("click", startNewChat);
+    newChatBtn.addEventListener("click", startNewChat);
+    chatSearch.addEventListener("input", () => renderSessionList(chatSearch.value));
+
+    async function sendMessage() {
+      if (chatInput.disabled) return;
+      const message = chatInput.value.trim();
+      if (!message) return;
+
+      addMessage(message, "user");
+      chatInput.value = "";
+      sendButton.disabled = true;
+      chatInput.disabled = true;
+
+      const typing = addMessage("FinZi is thinking...", "bot", false);
+      typing.classList.add("typing");
+
+      const contentEl = typing.querySelector(".message-content");
+      contentEl.innerHTML = "FinZi is thinking...";
+
+      try {
+        let current = "";
+        await FinZi.streamPost("/api/chat/stream", { message }, (chunk, collected) => {
+          current = collected;
+          contentEl.innerHTML = FinZi.escapeHtml(current).replace(/\n/g, "<br>");
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+        if (!current.trim()) {
+          const fallback = await FinZi.postJson("/api/chat", { message });
+          contentEl.innerHTML = FinZi.escapeHtml(fallback.reply || "No response available.").replace(/\n/g, "<br>");
+        }
+      } catch (error) {
+        try {
+          const fallback = await FinZi.postJson("/api/chat", { message });
+          contentEl.innerHTML = FinZi.escapeHtml(fallback.reply || "No response available.").replace(/\n/g, "<br>");
+        } catch (fallbackError) {
+          console.error(fallbackError);
+          contentEl.innerHTML = "The local AI model is unavailable right now. Please try again.";
+        }
+      } finally {
+        typing.classList.remove("typing");
+        chatInput.disabled = false;
+        sendButton.disabled = !chatInput.value.trim();
+        chatInput.focus();
+        await loadSessions().catch(() => {});
+      }
+    }
+
+    sendButton.addEventListener("click", sendMessage);
+    chatInput.addEventListener("input", () => {
+      sendButton.disabled = chatInput.disabled || !chatInput.value.trim();
+    });
+    chatInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+
+    await loadLiveConversation().catch((error) => {
+      console.warn("Unable to load current chat history", error);
+      setLiveMode();
+      renderMessages([]);
+    });
+    await loadSessions();
+    sendButton.disabled = !chatInput.value.trim();
+  });
+  </script>
+</body>
+</html>

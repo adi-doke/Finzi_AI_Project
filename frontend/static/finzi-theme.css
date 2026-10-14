@@ -1,0 +1,419 @@
+:root {
+  --primary: #138f87;
+  --primary-dark: #0f6f69;
+  --primary-light: #dff7f4;
+  --secondary: #12c4a8;
+  --gray-50: #f8fffd;
+  --gray-100: #eefbf8;
+  --gray-200: #d8eeea;
+  --gray-300: #bfded8;
+  --gray-400: #92bab4;
+  --gray-500: #6b8f88;
+  --gray-600: #516660;
+  --gray-700: #38504b;
+  --gray-800: #223047;
+  --gray-900: #16222f;
+  --accent: #12c4a8;
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(18, 196, 168, 0.16), transparent 28%),
+    radial-gradient(circle at top right, rgba(19, 143, 135, 0.14), transparent 24%),
+    linear-gradient(180deg, #f7fffd 0%, #eafaf7 100%) !important;
+  color: var(--gray-800);
+}
+
+.topbar {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border-bottom: 1px solid rgba(34, 48, 71, 0.08) !important;
+}
+
+.brand {
+  color: #0f0f16 !important;
+}
+
+.controls a.button,
+.controls button,
+.button {
+  border-radius: 999px;
+}
+
+.controls a.button:hover,
+.controls button:hover {
+  background: var(--primary-light);
+}
+
+.controls {
+  align-items: center;
+  gap: 8px !important;
+}
+
+.finzi-nav-link {
+  padding: 8px 11px !important;
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+
+.finzi-nav-link.active {
+  background: var(--primary-light) !important;
+  border-color: rgba(19, 143, 135, 0.34) !important;
+  color: var(--primary-dark) !important;
+}
+
+.controls a.button.secondary,
+.button.secondary {
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--gray-800);
+  border-color: rgba(34, 48, 71, 0.16);
+}
+
+.controls a.button.secondary:hover,
+.button.secondary:hover {
+  background: #ffffff;
+}
+
+.controls .primary,
+.controls button.primary,
+.button.primary,
+.submit-btn,
+.send-button,
+.cta {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%) !important;
+  color: white !important;
+  border-color: transparent !important;
+}
+
+.controls .primary:hover,
+.controls button.primary:hover,
+.button.primary:hover,
+.submit-btn:hover,
+.send-button:hover,
+.cta:hover {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, #11a39a 100%) !important;
+}
+
+.card,
+.panel,
+.login-container,
+.register-container,
+.chat-container,
+.budget-row,
+.feature-card,
+.about-card,
+.about-aside {
+  border-color: rgba(34, 48, 71, 0.08) !important;
+  box-shadow: 0 18px 36px rgba(34, 48, 71, 0.07) !important;
+}
+
+.grid,
+.grid-cards,
+.layout,
+.feature-grid,
+.about,
+.page-details {
+  color: var(--gray-800);
+}
+
+.finzi-profile-root {
+  position: relative;
+  margin-left: 6px;
+}
+
+.finzi-profile-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 11px;
+  border: 1px solid rgba(34, 48, 71, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--gray-800);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(34, 48, 71, 0.05);
+}
+
+.finzi-profile-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  color: white;
+}
+
+.finzi-profile-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 12px);
+  width: min(320px, calc(100vw - 24px));
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(34, 48, 71, 0.12);
+  border-radius: 24px;
+  box-shadow: 0 28px 60px rgba(34, 48, 71, 0.15);
+  overflow: hidden;
+  z-index: 100;
+}
+
+.finzi-profile-header {
+  padding: 18px;
+  background: linear-gradient(135deg, rgba(19, 143, 135, 0.14), rgba(18, 196, 168, 0.08));
+}
+
+.finzi-profile-name {
+  margin: 10px 0 2px;
+  font-size: 1.05rem;
+  color: var(--gray-900);
+  font-weight: 800;
+}
+
+.finzi-profile-subtitle {
+  margin: 0;
+  color: var(--gray-600);
+  font-size: 0.93rem;
+}
+
+.finzi-profile-body {
+  padding: 10px 18px 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.finzi-profile-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(34, 48, 71, 0.08);
+}
+
+.finzi-profile-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.finzi-profile-label {
+  display: block;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gray-500);
+  margin-bottom: 4px;
+  font-weight: 800;
+}
+
+.finzi-profile-value {
+  color: var(--gray-900);
+  font-weight: 700;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.finzi-profile-section-title {
+  margin: 0 0 8px;
+  font-size: 0.92rem;
+  color: var(--gray-600);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.finzi-profile-action {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  border: 1px solid rgba(34, 48, 71, 0.10);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--gray-800);
+  padding: 12px 14px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.finzi-profile-action:hover {
+  background: var(--gray-50);
+}
+
+.finzi-profile-action.danger {
+  color: #991b1b;
+  border-color: rgba(153, 27, 27, 0.16);
+}
+
+.finzi-profile-action.danger:hover {
+  background: #fef2f2;
+}
+
+.chat-shell {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 18px;
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 24px;
+  min-height: calc(100vh - 88px);
+}
+
+.chat-sidebar {
+  position: sticky;
+  top: 104px;
+  align-self: start;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(34, 48, 71, 0.08);
+  border-radius: 28px;
+  box-shadow: 0 18px 36px rgba(34, 48, 71, 0.07);
+  overflow: hidden;
+}
+
+.chat-sidebar-header {
+  padding: 18px;
+  border-bottom: 1px solid rgba(34, 48, 71, 0.08);
+}
+
+.chat-sidebar-title {
+  margin: 0 0 6px;
+  font-size: 1.1rem;
+  color: var(--gray-900);
+}
+
+.chat-sidebar-subtitle {
+  margin: 0;
+  color: var(--gray-600);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.chat-sidebar-body {
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.chat-sidebar-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.chat-sidebar-search {
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid rgba(34, 48, 71, 0.12);
+  padding: 12px 14px;
+  font: inherit;
+  color: var(--gray-900);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.chat-sidebar-list {
+  display: grid;
+  gap: 10px;
+  max-height: calc(100vh - 320px);
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.chat-sidebar-item {
+  text-align: left;
+  border: 1px solid rgba(34, 48, 71, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 18px;
+  padding: 14px;
+  cursor: pointer;
+  display: grid;
+  gap: 6px;
+}
+
+.chat-sidebar-item:hover,
+.chat-sidebar-item.active {
+  border-color: rgba(19, 143, 135, 0.28);
+  background: rgba(223, 247, 244, 0.72);
+}
+
+.chat-sidebar-item-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  color: var(--gray-900);
+  font-weight: 800;
+}
+
+.chat-sidebar-item-preview {
+  color: var(--gray-600);
+  font-size: 0.93rem;
+  line-height: 1.45;
+}
+
+.chat-sidebar-item-meta {
+  color: var(--gray-500);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+.chat-main {
+  min-width: 0;
+}
+
+.chat-session-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(34, 48, 71, 0.08);
+  border-radius: 18px;
+  color: var(--gray-700);
+}
+
+.chat-session-banner strong {
+  color: var(--gray-900);
+}
+
+.chat-session-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-weight: 700;
+}
+
+@media (max-width: 1100px) {
+  .chat-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .chat-sidebar {
+    position: relative;
+    top: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .topbar {
+    align-items: flex-start !important;
+  }
+
+  .controls {
+    width: 100%;
+    justify-content: flex-start !important;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .finzi-profile-menu {
+    right: auto;
+    left: 0;
+  }
+}
